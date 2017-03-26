@@ -37,7 +37,7 @@ func publishToSocket(playerID string, msg []byte) {
 	lock.RLock()
 	if s, ok := playerToSocketMap[playerID]; ok {
 		s.WriteMessage(websocket.TextMessage, msg)
-		log.Printf("Sent message to player %s: %s\n", playerID, string(msg))
+		//log.Printf("Sent message to player %s: %s\n", playerID, string(msg))
 	} else {
 		log.Printf("Could not find player with id %s. Ignoring message...\n", playerID)
 	}
@@ -56,7 +56,7 @@ func subscribeToPlayerMessages(playerID string, c *websocket.Conn) *nats.Subscri
 	channel := fmt.Sprintf("%s.messages", playerID)
 	log.Printf("Subscribing to %s\n", channel)
 	sub, err := natsConn.Subscribe(channel, func(m *nats.Msg) {
-		log.Printf("Received message for player %s: %s\n", playerID, string(m.Data))
+		//log.Printf("Received message for player %s: %s\n", playerID, string(m.Data))
 		publishToSocket(playerID, m.Data)
 	})
 	if err != nil {
@@ -80,7 +80,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	defer clearPlayer(playerID, channel, c, sub)
 
 	lock.Lock()
-	log.Printf("the player id: %s", playerID)
 	playerToSocketMap[playerID] = c
 	lock.Unlock()
 
